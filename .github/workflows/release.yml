@@ -56,8 +56,13 @@ jobs:
           brew tap d3mlabs/d3mlabs
           brew trust --tap d3mlabs/d3mlabs
           brew install d3mlabs/d3mlabs/dev
+      # dev's Linux data root is /var/lib/dev, which `dev up` provisions under
+      # sudo; the headless `dev deps install` does not. The hosted runner
+      # user has passwordless sudo: make the root and hand it over.
       - name: Install the lock
-        run: dev deps install
+        run: |
+          sudo install -d -o "$(id -u)" -g "$(id -g)" /var/lib/dev
+          dev deps install
 
       - name: Wait for the release assets
         env:
