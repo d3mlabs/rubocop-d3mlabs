@@ -1,0 +1,75 @@
+name: Publish to rubygems.org
+
+# `dev release <version>` cuts the release: bumps VERSION, tags, pushes,
+# packages the gem at the tag and attaches rubocop-d3mlabs-<version>.gem and
+# release.json to the GitHub release. Shipping that exact, SHA-verified asset
+# is dev's `deploy rubygems --release <version>` — run here rather than on
+# an operator's machine so the rubygems credential is a one-job OIDC token
+# (rubygems.org trusted publishing) and no API key is stored anywhere:
+# configure-rubygems-credentials exports GEM_HOST_API_KEY, the first link of
+# dev's credential chain, so the publisher never reaches `dev cred`.
+#
+# `published` fires when `dev release` creates the release, which is before
+# it uploads the assets; the wait step below bridges that gap. The manual
+# trigger re-runs a publish (a failed job, a publisher registered late).
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "release version to publish (e.g. 1.0.0); its GitHub release must carry the .gem and release.json"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+  deployments: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve the version
+        id: version
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Hosted runners are ephemeral: Homebrew + dev (the latest release from
+      # the d3mlabs tap) per run, then the lock — the project Ruby and gems.
+      - uses: Homebrew/actions/setup-homebrew@main
+      - name: Install dev
+        run: brew install d3mlabs/d3mlabs/dev
+      - name: Install the lock
+        run: dev deps install
+
+      - name: Wait for the release assets
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          for _ in $(seq 1 30); do
+            if gh release view "v$VERSION" --json assets --jq '.assets[].name' | grep -qx 'release.json'; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::release v$VERSION carries no release.json after 5 minutes — did dev release finish?"
+          exit 1
+
+      - name: Configure RubyGems credentials (trusted publisher, OIDC)
+        uses: rubygems/configure-rubygems-credentials@main
+
+      - name: Publish
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: dev deploy rubygems --release "$VERSION"

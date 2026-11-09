@@ -1,0 +1,31 @@
+name: rubocop-d3mlabs
+# One target: the gem. `gem build` is the whole build and its output is
+# already the archive, so the packager adopts it as-is.
+targets:
+  rubocop-d3mlabs:
+    desc: The gem (rubocop.yml and its runtime dependencies)
+    build: gem build rubocop-d3mlabs.gemspec --output "$DEV_INSTALL/rubocop-d3mlabs.gem"
+    packager: as-is
+# `dev up` needs no entry: the builtin installs the locked toolchain and gems
+# from dependencies.rb.
+commands:
+  test:
+    desc: Run this repo's tests
+    run: bundle exec rake test
+  style:
+    desc: Run RuboCop (dogfoods rubocop.yml)
+    run: bundle exec rubocop
+  deploy:
+    commands:
+      # The lock's rubygems publisher (dependencies.rb declares gems). Releases
+      # only — rubygems.org has no testing track. Run by
+      # .github/workflows/release.yml under an OIDC trusted-publisher token;
+      # `dev deploy rubygems --release <version>` from a machine with
+      # `dev cred rubygems api_key` is the fallback.
+      rubygems:
+        desc: Push the release's .gem to rubygems.org
+        targets: [rubocop-d3mlabs]
+  # `dev release [<version>]` bumps VERSION, tags, pushes, and attaches
+  # rubocop-d3mlabs-<version>.gem and release.json to the GitHub release.
+  release:
+    desc: Cut a release (bump VERSION, tag, push, the .gem on the GitHub release)

@@ -1,0 +1,47 @@
+# d3mlabs' RuboCop configuration: Shopify's style guide plus the org's rules.
+#
+# Consumers inherit it as a whole —
+#
+#   inherit_gem:
+#     rubocop-d3mlabs: rubocop.yml
+#
+# — and keep only repo-local facts (excluded paths, `Sorbet/StrictSigil`'s
+# include set and holdouts) in their own .rubocop.yml. A rule that every
+# d3mlabs Ruby repo should follow belongs here, not there.
+
+inherit_gem:
+  rubocop-shopify: rubocop.yml
+
+plugins:
+  - rubocop-sorbet
+
+# A consumer's `Exclude` lists add to the ones inherited here, never replace
+# them.
+inherit_mode:
+  merge:
+    - Exclude
+
+AllCops:
+  SuggestExtensions: false
+
+# A method is `def` / body / `end`. The endless form (`def x = …`) reads as
+# an assignment, hides a multi-clause body on one line, and splits the org's
+# code into two spellings of the same thing.
+Style/EndlessMethod:
+  EnforcedStyle: disallow
+
+# Every Ruby file declares a `typed:` sigil. How strict is each repo's call
+# (`Sorbet/StrictSigil`); that there is one is not.
+Sorbet/ValidSigil:
+  RequireSigilOnAllFiles: true
+
+# Tests are written in the RSpock dialect: bare comparisons in Then/Expect
+# blocks, block-name constants (Given/When/Then/Where/Cleanup) and
+# Where-table rows (`a | b`, sometimes with identical operands) are rewritten
+# into assertions by the AST transform, not evaluated for value.
+Lint/Void:
+  Exclude:
+    - test/**/*
+Lint/BinaryOperatorWithIdenticalOperands:
+  Exclude:
+    - test/**/*
