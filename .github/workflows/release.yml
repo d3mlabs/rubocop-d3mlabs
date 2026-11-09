@@ -48,8 +48,14 @@ jobs:
       # Hosted runners are ephemeral: Homebrew + dev (the latest release from
       # the d3mlabs tap) per run, then the lock — the project Ruby and gems.
       - uses: Homebrew/actions/setup-homebrew@main
+      # Homebrew 7 trusts taps per user: naming the formula on the command
+      # line trusts `dev` alone, and its `dev-core` dependency (and the lock's
+      # ruby@ bottle, from the same tap) is refused. Trust the tap once.
       - name: Install dev
-        run: brew install d3mlabs/d3mlabs/dev
+        run: |
+          brew tap d3mlabs/d3mlabs
+          brew trust --tap d3mlabs/d3mlabs
+          brew install d3mlabs/d3mlabs/dev
       - name: Install the lock
         run: dev deps install
 
