@@ -45,24 +45,22 @@ jobs:
             echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
           fi
 
-      # Hosted runners are ephemeral: Homebrew + dev (the latest release from
-      # the d3mlabs tap) per run, then the lock — the project Ruby and gems.
+      # The hosted recipe (dev's README): install Homebrew + dev when the host
+      # has none, then `dev up` — the same line a warm box or a checkpoint
+      # runs as a probe. dev#545 lifts these two steps into a shared action.
       - uses: Homebrew/actions/setup-homebrew@main
-      # Homebrew 7 trusts taps per user: naming the formula on the command
-      # line trusts `dev` alone, and its `dev-core` dependency (and the lock's
-      # ruby@ bottle, from the same tap) is refused. Trust the tap once.
+      # Homebrew 7 trusts taps per user and the prompt dies on a
+      # non-interactive runner: trust the tap up front, which covers dev,
+      # its dev-core dependency and the lock's ruby@ bottle.
       - name: Install dev
         run: |
           brew tap d3mlabs/d3mlabs
           brew trust --tap d3mlabs/d3mlabs
           brew install d3mlabs/d3mlabs/dev
-      # dev's Linux data root is /var/lib/dev, which `dev up` provisions under
-      # sudo; the headless `dev deps install` does not. The hosted runner
-      # user has passwordless sudo: make the root and hand it over.
-      - name: Install the lock
-        run: |
-          sudo install -d -o "$(id -u)" -g "$(id -g)" /var/lib/dev
-          dev deps install
+      # Converges the host (the data root under sudo, the org tooling) and
+      # installs the lock — the project Ruby and gems.
+      - name: dev up
+        run: dev up
 
       - name: Wait for the release assets
         env:
