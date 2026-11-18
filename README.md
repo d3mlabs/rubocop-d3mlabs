@@ -30,7 +30,7 @@ inherit_gem:
 
 A [dev](https://github.com/d3mlabs/dev) project: `dev up` installs the toolchain and gems from `dependencies.rb`, `dev test` runs the suite (the config is loaded through RuboCop's own loader and asserted), `dev style` lints the repo with the config it ships.
 
-Releasing is `dev release [<version>]` — bumps `VERSION`, tags, pushes, and attaches `rubocop-d3mlabs-<version>.gem` to the GitHub release — after which [`release.yml`](.github/workflows/release.yml) publishes that exact asset to rubygems.org as a [trusted publisher](https://guides.rubygems.org/trusted-publishing/) via `dev deploy rubygems --release <version>`.
+Releasing is `dev release [<version>]` — bumps `VERSION`, tags, pushes, and attaches `rubocop-d3mlabs-<version>.gem` to the GitHub release — after which [`dev-publish-rubygems.yml`](.github/workflows/dev-publish-rubygems.yml), the publish workflow dev ships, publishes that exact asset to rubygems.org as a [trusted publisher](https://guides.rubygems.org/trusted-publishing/) via `dev deploy rubygems --release <version>`.
 
 ## License
 

@@ -18,10 +18,11 @@ commands:
   deploy:
     commands:
       # The lock's rubygems publisher (dependencies.rb declares gems). Releases
-      # only — rubygems.org has no testing track. Run by
-      # .github/workflows/release.yml under an OIDC trusted-publisher token;
-      # `dev deploy rubygems --release <version>` from a machine with
-      # `dev cred rubygems api_key` is the fallback.
+      # only — rubygems.org has no testing track. Run by the workflow dev
+      # ships, .github/workflows/dev-publish-rubygems.yml (a verbatim copy of
+      # dev's share/workflows/dev-publish-rubygems.yml), under an OIDC
+      # trusted-publisher token; `dev deploy rubygems --release <version>`
+      # from a machine with `dev cred rubygems api_key` is the fallback.
       rubygems:
         desc: Push the release's .gem to rubygems.org
         targets: [rubocop-d3mlabs]
