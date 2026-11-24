@@ -4,7 +4,7 @@ name: rubocop-d3mlabs
 targets:
   rubocop-d3mlabs:
     desc: The gem (rubocop.yml and its runtime dependencies)
-    build: gem build rubocop-d3mlabs.gemspec --output "$DEV_INSTALL/rubocop-d3mlabs.gem"
+    builder: gem build rubocop-d3mlabs.gemspec --output "$DEV_INSTALL/rubocop-d3mlabs.gem"
     packager: as-is
 # `dev up` needs no entry: the builtin installs the locked toolchain and gems
 # from dependencies.rb.
