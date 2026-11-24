@@ -1,3 +1,10 @@
+# CI runs what a developer runs: `dev up`, then the check verbs dev.yml
+# defines — `dev style`, `dev test`. Nothing here invokes the toolchain
+# directly: dev provisions the locked Ruby and gems from dependencies.rb,
+# and every dev command errors in CI when the manifest and the lock
+# disagree, so a dependencies.rb edit without `dev deps update` fails the
+# first step. GH_TOKEN is the credential the action's toolchain check
+# requires; the job's own token reaches every pin this public tap serves.
 name: CI
 
 on:
@@ -5,24 +12,20 @@ on:
     branches: [main]
   pull_request:
 
+env:
+  GH_TOKEN: ${{ github.token }}
+
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # No ruby-version input: setup-ruby reads .ruby-version, which dev
-      # generates from dependencies.rb — the Gemfile pins that exact patch
-      # version, so a floating "4.0" here would fail bundler's version check.
-      - uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-      - run: bundle exec rubocop
+      - uses: d3mlabs/dev/up@main
+      - run: dev style
 
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-      - run: bundle exec rake test
+      - uses: d3mlabs/dev/up@main
+      - run: dev test
