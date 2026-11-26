@@ -12,18 +12,28 @@ transform!(RSpock::AST::Transformation)
 class RubocopD3mlabsGemspecTest < Minitest::Test
   SPEC = Gem::Specification.load(RUBOCOP_D3MLABS_ROOT.join("rubocop-d3mlabs.gemspec").to_s)
 
+  # The two declarations are in different grammars — the gemspec is
+  # rubygems' (`~> 3.0`), dependencies.rb is semver's, which dev renders
+  # into the Gemfile as comparators (`>= 3.0.0, < 4.0.0`) — so they are
+  # compared as the bounds they mean: `~> v` is `>= v, < v.bump`.
+  def bounds(requirement)
+    requirement.requirements.flat_map do |op, version|
+      op == "~>" ? [[">=", version], ["<", version.bump]] : [[op, version]]
+    end.sort_by { |op, version| [op, version] }
+  end
+
   test "runtime dependencies match the manifest's ungrouped gems" do
     Given "the gemspec's runtime dependencies"
-    runtime = SPEC.runtime_dependencies.map { |dep| [dep.name, dep.requirement.to_s] }.sort
+    runtime = SPEC.runtime_dependencies.map { |dep| [dep.name, bounds(dep.requirement)] }.sort
 
     When "the generated Gemfile — dev's rendering of dependencies.rb — is read for its ungrouped gems"
     gemfile = Bundler::Dsl.evaluate(RUBOCOP_D3MLABS_ROOT.join("Gemfile"), nil, {})
     exported = gemfile.dependencies
       .select { |dep| dep.groups == [:default] }
-      .map { |dep| [dep.name, dep.requirement.to_s] }
+      .map { |dep| [dep.name, bounds(dep.requirement)] }
       .sort
 
-    Then "the same gems at the same requirements"
+    Then "the same gems, bounded the same"
     runtime == exported
   end
 

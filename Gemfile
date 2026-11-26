@@ -3,12 +3,12 @@
 
 source "https://rubygems.org"
 ruby "4.0.6"
-gem "rubocop-shopify", "~> 3.0"
-gem "rubocop-sorbet", "~> 0.10"
+gem "rubocop-shopify", ">= 3.0.0", "< 4.0.0"
+gem "rubocop-sorbet", ">= 0.10", "< 1"
 
 group :test do
   gem "minitest"
   gem "minitest-reporters"
   gem "rake"
-  gem "rspock", "~> 3.0"
+  gem "rspock", ">= 3.0.0", "< 4.0.0"
 end
