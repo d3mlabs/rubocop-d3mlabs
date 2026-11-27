@@ -1,0 +1,10 @@
+# The org's cops and their defaults, handed to RuboCop by the plugin
+# (RuboCop::D3mlabs::Plugin). rubocop.yml decides which are on for every
+# d3mlabs repo; this file says what each cop is.
+
+D3mlabs/RawMocha:
+  Description: "Tests state interactions in RSpock and inject collaborators; mocha's stubs/expects/any_instance and doubles built with answers are offenses."
+  Enabled: true
+  VersionAdded: "1.1.0"
+  Include:
+    - "**/test/**/*"

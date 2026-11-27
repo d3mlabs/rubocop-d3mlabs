@@ -44,6 +44,12 @@ class RubocopD3mlabsGemspecTest < Minitest::Test
     SPEC.files.include?("VERSION")
   end
 
+  test "ships the cops: every file under lib/ and config/, and names the plugin class for RuboCop" do
+    Expect "lib/ and config/ are in the gem, and the plugin is discoverable from the installed gem's metadata"
+    Dir.glob("{lib,config}/**/*", base: RUBOCOP_D3MLABS_ROOT.to_s).select { |f| RUBOCOP_D3MLABS_ROOT.join(f).file? }.sort == SPEC.files.grep(%r{\A(lib|config)/}).sort
+    SPEC.metadata["default_lint_roller_plugin"] == "RuboCop::D3mlabs::Plugin"
+  end
+
   test "reads its version from VERSION" do
     Expect "the one place `dev release` bumps"
     SPEC.version.to_s == RUBOCOP_D3MLABS_ROOT.join("VERSION").read.strip

@@ -36,6 +36,16 @@ class RubocopD3mlabsConfigTest < Minitest::Test
     CONFIG.for_all_cops["StyleGuideBaseURL"] == "https://shopify.github.io/ruby-style-guide/"
   end
 
+  test "loads the org's cops as a plugin and enables D3mlabs/RawMocha over the test tree" do
+    Given "the config as a consumer's run sees it: the file's layer over the defaults the plugin registered"
+    merged = RuboCop::ConfigLoader.merge_with_default(CONFIG, CONFIG.loaded_path)
+
+    Expect "the cop is registered, enabled, and scoped to test files"
+    RuboCop::Cop::Registry.global.contains_cop_matching?(["D3mlabs/RawMocha"])
+    merged.for_cop("D3mlabs/RawMocha")["Enabled"] == true
+    merged.for_cop("D3mlabs/RawMocha")["Include"].any? { |path| path.end_with?("test/**/*") }
+  end
+
   test "does not suggest extensions" do
     Expect "SuggestExtensions is off"
     CONFIG.for_all_cops["SuggestExtensions"] == false

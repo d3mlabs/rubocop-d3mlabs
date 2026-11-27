@@ -3,6 +3,7 @@
 
 source "https://rubygems.org"
 ruby "4.0.6"
+gem "rubocop", ">= 1.72"
 gem "rubocop-shopify", ">= 3.0.0", "< 4.0.0"
 gem "rubocop-sorbet", ">= 0.10", "< 1"
 

@@ -13,8 +13,11 @@ commands:
     desc: Run this repo's tests
     run: bundle exec rake test
   style:
-    desc: Run RuboCop (dogfoods rubocop.yml)
-    run: bundle exec rubocop
+    desc: Run RuboCop (dogfoods rubocop.yml and the cops)
+    # rubocop.yml loads the org's cops as the `rubocop-d3mlabs` plugin, by
+    # gem name. The checkout is not a gem in its own bundle, so lib/ goes on
+    # the load path for `require "rubocop-d3mlabs"` to find it here.
+    run: RUBYLIB="$PWD/lib${RUBYLIB:+:$RUBYLIB}" bundle exec rubocop
   deploy:
     commands:
       # The lock's rubygems publisher (dependencies.rb declares gems). Releases

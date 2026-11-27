@@ -14,6 +14,8 @@ Dev::Deps.define do
   # until dev renders the gemspec (d3mlabs/dev#71). Declaring them here is
   # also what contributes the `deploy rubygems` channel: the lock reaches the
   # bundler integration, whose write side is rubygems.org.
+  # rubocop 1.72 is the first with the plugin system the cops load through.
+  gem "rubocop", ">= 1.72"
   gem "rubocop-shopify", "^3.0"
   gem "rubocop-sorbet", ">= 0.10, < 1"
 

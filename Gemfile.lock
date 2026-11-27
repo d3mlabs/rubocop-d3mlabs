@@ -106,6 +106,7 @@ DEPENDENCIES
   minitest-reporters
   rake
   rspock (>= 3.0.0, < 4.0.0)
+  rubocop (>= 1.72)
   rubocop-shopify (>= 3.0.0, < 4.0.0)
   rubocop-sorbet (>= 0.10, < 1)
 

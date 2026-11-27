@@ -12,8 +12,14 @@
 inherit_gem:
   rubocop-shopify: rubocop.yml
 
+# rubocop-sorbet's cops, and the org's own (lib/rubocop/cop/d3mlabs/,
+# defaults in config/default.yml). The plugin class is named here rather
+# than left to the gem's metadata so the same file serves a checkout of
+# this repo, where no gem is installed and `lib/` is on the load path.
 plugins:
   - rubocop-sorbet
+  - rubocop-d3mlabs:
+      plugin_class_name: RuboCop::D3mlabs::Plugin
 
 # A consumer's `Exclude` lists add to the ones inherited here, never replace
 # them.
@@ -45,3 +51,11 @@ Lint/Void:
 Lint/BinaryOperatorWithIdenticalOperands:
   Exclude:
     - test/**/*
+
+# A test states what the class under test sent its collaborators, as RSpock
+# interactions (`n * recv.msg(args) >> value`), and hands the class those
+# collaborators; it does not reach into it with mocha. A site that must
+# (an order of calls RSpock does not express) says why on the directive:
+# `# rubocop:disable D3mlabs/RawMocha -- <why>`.
+D3mlabs/RawMocha:
+  Enabled: true
