@@ -52,15 +52,15 @@ bundler:
 gh:
   ai-flow:
     group: build
-    version: v1.1.0
-    source: e8530567ad832f26bd71749018ade73e049cf6ab
+    version: v1.1.1
+    source: 4ef2501f59c70c2322e5bb1316f4dd624433adf6
     repo: d3mlabs/ai-flow
-    commit: e8530567ad832f26bd71749018ade73e049cf6ab
+    commit: 4ef2501f59c70c2322e5bb1316f4dd624433adf6
     assets:
-    - name: ai-flow-1.1.0.zip
-      size: 193583
-      sha256: 6448f28a851e395c8e303e9f93913d75523741cca6ad03b7faa2a57b83e8be86
+    - name: ai-flow-1.1.1.zip
+      size: 194713
+      sha256: f8fe1bc80f24805d262246eb40f7096db84488c6c7aa0b894de08eaf75685356
     - name: release.json
-      size: 396
-      sha256: 8a880836738619e028c22415325a9526ede33620a7c153a898beb07410895573
+      size: 397
+      sha256: df6f9d7bb7a0fe03db0847ccf11277c59da847d7b10b93f838094212058e792f
     asset_pattern: ai-flow-*.zip
