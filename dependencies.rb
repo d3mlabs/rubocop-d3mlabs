@@ -17,7 +17,11 @@ Dev::Deps.define do
   gem "rubocop-shopify", "^3.0"
   gem "rubocop-sorbet", ">= 0.10, < 1"
 
-  group(:test) do
+  group :build do
+    gh "d3mlabs/ai-flow", "^1", assets: "ai-flow-*.zip"
+  end
+
+  group :test do
     gem "minitest"
     gem "minitest-reporters"
     gem "rake"
